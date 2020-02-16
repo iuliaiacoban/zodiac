@@ -1,39 +1,43 @@
-class Zodiac {
+import getZodiacSign from '../utils/zodiacSigns';
 
-  private date: string;
-  private zodiacSign: any;
-  private zodiacSigns = [
-    { day: 20, beforeDaySign: 'capricorn', afterDaySign: 'aquarius' },
-    { day: 19, beforeDaySign: 'aquarius', afterDaySign: 'pisces' },
-    { day: 21, beforeDaySign: 'pisces', afterDaySign: 'aries' },
-    { day: 20, beforeDaySign: 'aries', afterDaySign: 'taurus' },
-    { day: 21, beforeDaySign: 'taurus', afterDaySign: 'gemini' },
-    { day: 21, beforeDaySign: 'gemini', afterDaySign: 'cancer' },
-    { day: 23, beforeDaySign: 'cancer', afterDaySign: 'leo' },
-    { day: 23, beforeDaySign: 'leo', afterDaySign: 'virgo' },
-    { day: 23, beforeDaySign: 'virgo', afterDaySign: 'libra' },
-    { day: 23, beforeDaySign: 'libra', afterDaySign: 'scorpio' },
-    { day: 22, beforeDaySign: 'scorpio', afterDaySign: 'sagittarius' },
-    { day: 22, beforeDaySign: 'sagittarius', afterDaySign: 'capricorn' }
-  ];
+// const validateDate = (date: string) => {
+//   try {
+//     Date.parse(date);
+//     return true
+//   } catch (error) {
+//     return false;
+//   }
+// }
 
-  constructor(date: string) {
-    this.date = date;
+const parseCookies = (req: any) => {
+  let cookies = {};
+
+  if (req.headers && req.headers.hasOwnProperty('cookie')) {
+    req.headers.cookie.split(';').forEach((cookie: any) => {
+      const parts = cookie.match(/(.*?)=(.*)$/);
+      cookies[parts[1].trim()] = (parts[2] || '').trim();
+    });
+    return cookies;
+  } else {
+    return false;
+  }
+}
+
+const zodiac = (req: any, res: any, next: any) => {
+  const cookies = parseCookies(req);
+
+  if (req.query.hasOwnProperty('date')) {
+    res.cookie('dob', req.query.date);
+    res.status(200).send({ zodiacSign: getZodiacSign(req.query.date) });
+    return;
   }
 
-  getZodiacSign() {
-    const stringToDate = new Date(this.date);
-    stringToDate.setHours(12, 0, 0);
-
-    const day = stringToDate.getDate();
-    const month = stringToDate.getMonth();
-
-    this.zodiacSign = day < this.zodiacSigns[month].day ?
-      this.zodiacSigns[month].beforeDaySign :
-      this.zodiacSigns[month].afterDaySign;
-    return this.zodiacSign;
+  if (!req.query.hasOwnProperty('date') && cookies && cookies.hasOwnProperty('dob')) {
+    res.status(200).send({ zodiacSign: getZodiacSign(cookies['dob']) });
+  } else {
+    res.status(500).send({ error: 'date of birth is required' });
   }
 
 }
 
-export default Zodiac;
+export default zodiac;
