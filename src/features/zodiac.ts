@@ -1,4 +1,6 @@
 import getZodiacSign from '../utils/zodiacSigns';
+import getAge from '../utils/getAge';
+import setCookie from '../utils/cookieHandler';
 
 // const validateDate = (date: string) => {
 //   try {
@@ -9,26 +11,16 @@ import getZodiacSign from '../utils/zodiacSigns';
 //   }
 // }
 
-const parseCookies = (req: any) => {
-  let cookies = {};
-
-  if (req.headers && req.headers.hasOwnProperty('cookie')) {
-    req.headers.cookie.split(';').forEach((cookie: any) => {
-      const parts = cookie.match(/(.*?)=(.*)$/);
-      cookies[parts[1].trim()] = (parts[2] || '').trim();
-    });
-    return cookies;
-  } else {
-    return false;
-  }
-}
 
 const zodiac = (req: any, res: any, next: any) => {
-  const cookies = parseCookies(req);
+  const cookies = setCookie(req);
 
   if (req.query.hasOwnProperty('date')) {
     res.cookie('dob', req.query.date);
-    res.status(200).send({ zodiacSign: getZodiacSign(req.query.date) });
+    res.status(200).send({
+      zodiacSign: getZodiacSign(req.query.date),
+      age: getAge(req.query.date)
+    });
     return;
   }
 
