@@ -1,4 +1,4 @@
-const setCookie = (req: any) => {
+const getCookie = (req: any) => {
   let cookies = {};
 
   if (req.headers && req.headers.hasOwnProperty('cookie')) {
@@ -13,5 +13,5 @@ const setCookie = (req: any) => {
 
 }
 
-export default setCookie;
+export default getCookie;
 

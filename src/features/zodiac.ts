@@ -1,6 +1,6 @@
 import getZodiacSign from '../utils/zodiacSigns';
 import getAge from '../utils/getAge';
-import setCookie from '../utils/cookieHandler';
+import getCookie from '../utils/cookieHandler';
 
 // const validateDate = (date: string) => {
 //   try {
@@ -13,7 +13,7 @@ import setCookie from '../utils/cookieHandler';
 
 
 const zodiac = (req: any, res: any, next: any) => {
-  const cookies = setCookie(req);
+  const cookies = getCookie(req);
 
   if (req.query.hasOwnProperty('date')) {
     res.cookie('dob', req.query.date);
